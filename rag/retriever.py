@@ -26,14 +26,14 @@ class Retriever:
 
         cleaned_context = []
 
-        for doc in docs:
+        for i in range(len(docs)):
 
-            content = doc.page_content
+            content = docs[i].page_content
 
             if "Answer:" in content:
                 content = content.split("Answer:")[-1].strip()
 
-            cleaned_context.append(content)
+            cleaned_context.append(f"Context {i+1}: {content}")
 
         return "\n".join(cleaned_context)
 
