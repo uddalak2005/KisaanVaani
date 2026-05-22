@@ -2,7 +2,7 @@ from langchain_chroma import Chroma
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_core.documents import Document
 from typing import List
-from vector_store import VectorStore
+from rag.vector_store import VectorStore
 
 
 class Retriever:

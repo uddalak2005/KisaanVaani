@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-from vector_store import VectorStore
+from rag.vector_store import VectorStore
 
 
 class Ingest:
+
+    _BATCH_SIZE: int = 5000
 
     def __init__(self):
         load_dotenv()
