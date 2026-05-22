@@ -4,34 +4,31 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
+from vector_store import VectorStore
 
 class Ingest:
     _dataset : DatasetDict
     _BATCH_SIZE : int = 5000
-    embedder : HuggingFaceEmbeddings
-    vector_store : Chroma
+    _embedder : HuggingFaceEmbeddings
+    _vector_store : Chroma
 
     def __init__(self):
         load_dotenv()
 
-        self.dataset = load_dataset("KisanVaani/agriculture-qa-english-only")
+        self._dataset = load_dataset("KisanVaani/agriculture-qa-english-only")
 
-        self.embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        self._embedder = VectorStore().get_embedder()
 
-        self.vector_store = Chroma(
-            collection_name="farming_qa",
-            embedding_function=self.embedder,
-            persist_directory="./chroma_langchain_db",
-        )
+        self._vector_store = VectorStore().get_vector_store()
 
     def prepare(self) -> List[Document]:
         docs : List[Document] = []
 
-        for doc in self.dataset["train"]:
+        for doc in self._dataset["train"]:
             text = f"""
-        Question: {doc["question"]}
-        Answer: {doc["answers"]}
-        """
+Question: {doc["question"]}
+Answer: {doc["answers"]}
+""".strip()
 
             docs.append(Document(page_content=text, metadata={"type": "farming_qa"}))
 
@@ -39,7 +36,7 @@ class Ingest:
 
     def ingest(self) -> None:
 
-        count : int = len(self.vector_store.get()["ids"])
+        count : int = len(self._vector_store.get()["ids"])
 
         if count > 0:
             print("Data Already Ingested")
@@ -51,7 +48,7 @@ class Ingest:
 
             batch : List[Document] = documents[i : i + self._BATCH_SIZE]
 
-            self.vector_store.add_documents(batch)
+            self._vector_store.add_documents(batch)
 
             print(f"Inserted batch {i // self._BATCH_SIZE + 1}")
 
