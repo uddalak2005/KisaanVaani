@@ -6,23 +6,22 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from vector_store import VectorStore
 
+
 class Ingest:
-    _dataset : DatasetDict
-    _BATCH_SIZE : int = 5000
-    _embedder : HuggingFaceEmbeddings
-    _vector_store : Chroma
 
     def __init__(self):
         load_dotenv()
 
-        self._dataset = load_dataset("KisanVaani/agriculture-qa-english-only")
+        self._dataset: DatasetDict = load_dataset(
+            "KisanVaani/agriculture-qa-english-only"
+        )
 
-        self._embedder = VectorStore().get_embedder()
+        self._embedder: HuggingFaceEmbeddings = VectorStore().get_embedder()
 
-        self._vector_store = VectorStore().get_vector_store()
+        self._vector_store: Chroma = VectorStore().get_vector_store()
 
     def prepare(self) -> List[Document]:
-        docs : List[Document] = []
+        docs: List[Document] = []
 
         for doc in self._dataset["train"]:
             text = f"""
@@ -36,17 +35,17 @@ Answer: {doc["answers"]}
 
     def ingest(self) -> None:
 
-        count : int = len(self._vector_store.get()["ids"])
+        count: int = len(self._vector_store.get()["ids"])
 
         if count > 0:
             print("Data Already Ingested")
             return
 
-        documents : List[Document] = self.prepare()
+        documents: List[Document] = self.prepare()
 
         for i in range(0, len(documents), self._BATCH_SIZE):
 
-            batch : List[Document] = documents[i : i + self._BATCH_SIZE]
+            batch: List[Document] = documents[i : i + self._BATCH_SIZE]
 
             self._vector_store.add_documents(batch)
 
@@ -59,6 +58,3 @@ Answer: {doc["answers"]}
 if __name__ == "__main__":
     ingestion = Ingest()
     ingestion.ingest()
-
-
-

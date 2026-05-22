@@ -4,33 +4,39 @@ from langchain_core.documents import Document
 from typing import List
 from vector_store import VectorStore
 
+
 class Retriever:
-    _vector_store : Chroma
-    _retriever : VectorStoreRetriever
 
-    def __init__(self):
+    def __init__(self, k: int = 2, fetch_k: int = 10):
 
-        self._vector_store = VectorStore().get_vector_store()
+        self._vector_store: Chroma = VectorStore().get_vector_store()
 
-        self._retriever = self._vector_store.as_retriever(
+        self._retriever: VectorStoreRetriever = self._vector_store.as_retriever(
             search_type="mmr",
             search_kwargs={
-                "k": 4,
+                "k": k,
                 "filter": {"type": "farming_qa"},
-                "fetch_k" : 10
-            }
+                "fetch_k": fetch_k,
+            },
         )
 
-    def retrieve(self, query : str) -> List[str]:
+    def retrieve(self, query: str) -> str:
 
-        docs : List[Document] = self._retriever.invoke(query)
+        docs: List[Document] = self._retriever.invoke(query)
 
-        context = []
+        cleaned_context = []
 
         for doc in docs:
-            context.append(doc.page_content)
 
-        return context
+            content = doc.page_content
+
+            if "Answer:" in content:
+                content = content.split("Answer:")[-1].strip()
+
+            cleaned_context.append(content)
+
+        return "\n".join(cleaned_context)
+
 
 if __name__ == "__main__":
     retriever = Retriever()

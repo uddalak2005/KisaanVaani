@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 
 class VectorStore:
 
-    _instance : VectorStore = None
-    _vector_store : Chroma
-    _embedder : HuggingFaceEmbeddings
+    _instance: VectorStore = None
+    _vector_store: Chroma
+    _embedder: HuggingFaceEmbeddings
 
     def __new__(cls):
 
@@ -16,7 +16,9 @@ class VectorStore:
         if cls._instance is None:
             cls._instance = super(VectorStore, cls).__new__(cls)
 
-            cls._instance._embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            cls._instance._embedder = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-MiniLM-L6-v2"
+            )
 
             cls._instance._vector_store = Chroma(
                 collection_name="farming_qa",
