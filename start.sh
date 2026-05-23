@@ -7,6 +7,9 @@ set -e
 #uv run python -m voice.main start &
 #uv run python main.py &
 
+python -m rag.ingest
+
+# Then start the background processes
 python -m voice.main start &
 python main.py &
 
