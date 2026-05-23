@@ -74,6 +74,16 @@ class Rag:
 
         return self.general_query(query_string, lang)  ## General Questions
 
+    def greet(self, lang: Language) -> str:
+        # One-shot greeting, never stored in history
+        system_prompt: str = PromptFactory().get_general_prompt(lang)
+        messages = [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content="Greet the farmer warmly in one sentence only."),
+        ]
+        response: AIMessage = self._model.invoke(messages)
+        return str(response.content)
+
 
 if __name__ == "__main__":
 

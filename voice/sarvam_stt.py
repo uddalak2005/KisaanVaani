@@ -7,11 +7,11 @@ from utils.language_enum import Language
 
 load_dotenv()
 
+
 def create_stt() -> SarvamSTTService:
     return SarvamSTTService(
         api_key=str(os.getenv("SARVAM_API_KEY")),
         vad_analyzer=SileroVADAnalyzer(
-            sample_rate=8000,
-            params=VADParams(stop_secs=0.5)
-        )
+            sample_rate=8000, params=VADParams(stop_secs=0.5)
+        ),
     )

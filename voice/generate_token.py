@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def generate_token(room_name: str, participant_name: str = "bot") -> str:
     token = (
         api.AccessToken(

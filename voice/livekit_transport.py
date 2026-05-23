@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def create_transport(token: str) -> LiveKitTransport:
     return LiveKitTransport(
         url=str(os.getenv("LIVEKIT_URL")),
@@ -12,5 +13,5 @@ def create_transport(token: str) -> LiveKitTransport:
         params=LiveKitParams(
             audio_in_enabled=True,
             audio_out_enabled=True,
-        )
+        ),
     )

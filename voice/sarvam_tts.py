@@ -8,19 +8,35 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from typing import Dict
+
+# Define the optimal voice for each language context
+VOICE_MAP: Dict[Language, str] = {
+    Language.HI: "shubh",  # Excellent, natural male Hindi voice
+    Language.BN: "ritu",  # Highly natural female Bengali voice
+    Language.TE: "pooja",  # Fluent, clear female Telugu voice
+    Language.EN: "amit",  # Standard Indian-English fallback voice
+}
+
+
 def create_tts(lang: Language) -> SarvamTTSService:
-    pipecat_lang: PipecatLanguage = LANGUAGE_MAP.get(lang, PipecatLanguage.HI_IN)
+    pipecat_lang = LANGUAGE_MAP.get(lang, PipecatLanguage.HI_IN)
+
+    # Dynamically select the voice; fallback to "shubh" if language not found
+    selected_voice = VOICE_MAP.get(lang, "shubh")
 
     return SarvamTTSService(
         api_key=str(os.getenv("SARVAM_API_KEY")),
-        sample_rate=8000,  # for Telephonic Conversations
+        sample_rate=8000,  # Optimized for telephonic bandwidth over LiveKit
         settings=SarvamTTSService.Settings(
-            voice="shubh",
-            model="bulbul:v3",  # Explicit model selection
-            language=pipecat_lang,  # Enum, not raw string "hi-IN"
+            voice=selected_voice,
+            model="bulbul:v3",
+            language=pipecat_lang,
         ),
         vad_analyzer=SileroVADAnalyzer(
             sample_rate=8000,
-            params=VADParams(stop_secs=0.5)  # wait 0.5s silence before end-of-turn
-        )
+            params=VADParams(
+                stop_secs=0.5
+            ),  # 0.5s silence buffer prevents mid-sentence cutoffs
+        ),
     )
